@@ -1,0 +1,34 @@
+---
+- name: ubuntu instance 
+  ec2:
+    region: us-west-2
+    key_name: devops
+    instance_type: t2.micro
+    image:  ami-5e63d13e
+    wait: yes
+    group: SecureMe
+    count: 1
+    assign_public_ip: yes
+    vpc_subnet_id: subnet-53a37834
+    instance_tags:
+        Name: ubuntu2
+        owner: srinivas
+  register: ubuntu  
+  
+
+  
+- name: Wait for SSH to come up
+  wait_for:
+            host: '{{ item.public_ip }}'
+            port: 22
+            delay: 60
+            timeout: 320
+            state: started
+  with_items: '{{ ubuntu.instances }}'
+            
+
+- name: Add instances to host group
+  add_host: 
+            hostname: '{{item.public_ip}}' 
+            groupname: SecureMe
+  with_items: '{{ubuntu.instances}}'

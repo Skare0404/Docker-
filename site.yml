@@ -1,0 +1,17 @@
+---
+- name: setup ubuntu 
+  hosts: localhost
+  become: sudo
+  
+  roles:
+    - ec2_instance
+
+- hosts: all
+  user: ubuntu
+  gather_facts: false
+  become: yes
+  become_method: sudo
+  hosts: SecureMe
+ 
+  roles:
+    - dc
